@@ -1,4 +1,5 @@
 package innopolis.stc21.MA;
+
 import java.util.Objects;
 
 public class MyHashMap {
@@ -8,21 +9,21 @@ public class MyHashMap {
      */
     static final int DEFAULT_CAPACITY = 16;
     /**
-     *Default load factor for MyHashMap
+     * Default load factor for MyHashMap
      */
-    static final float DEFAULT_LOAD_FACTOR =  0.75F;
+    static final float DEFAULT_LOAD_FACTOR = 0.75F;
     /**
      * Half-size of int type for calculate maximum size of nodes array
      */
     static final int MAX_CAPACITY = 1073741823;
 
     /**
-     * Class for for storing key-value pairs
+     * Class for storing key-value pairs
      */
-    static class Node{
+    static class Node {
 
         /**
-         *Hash code of current node
+         * Hash code of current node
          */
         final int hash;
         /**
@@ -30,7 +31,7 @@ public class MyHashMap {
          */
         final String key;
         /**
-         *Value of current node
+         * Value of current node
          */
         String value;
         /**
@@ -38,7 +39,7 @@ public class MyHashMap {
          */
         Node next;
 
-        Node (int hash, String key, String value, Node next ){
+        Node(int hash, String key, String value, Node next) {
             this.hash = hash;
             this.key = key;
             this.next = next;
@@ -49,38 +50,40 @@ public class MyHashMap {
         public String getKey() {
             return key;
         }
+
         public int getHash() {
             return hash;
         }
+
         public String getValue() {
             return value;
         }
+
         public Node getNext() {
             return next;
         }
 
 
-
-        public final String setValue(String newValue){
+        public final String setValue(String newValue) {
             String oldValue = this.value;
             this.value = newValue;
             return oldValue;
         }
 
-        public final Node setNext (Node newNext){
+        public final Node setNext(Node newNext) {
             Node oldNext = this.next;
             this.next = newNext;
             return oldNext;
         }
 
         @Override
-        public final boolean equals(Object o){
-            if (this == o){
+        public final boolean equals(Object o) {
+            if (this == o) {
                 return true;
             }
-            if (o instanceof Node){
+            if (o instanceof Node) {
                 Node node = (Node) o;
-                if(this.key == node.getKey() && this.value == node.getValue()){
+                if (this.key == node.getKey() && this.value == node.getValue()) {
                     return true;
                 }
             }
@@ -88,12 +91,12 @@ public class MyHashMap {
         }
 
         @Override
-        public final String toString(){
+        public final String toString() {
             return key + "=" + value;
         }
 
         @Override
-        public final int hashCode(){
+        public final int hashCode() {
             return Objects.hashCode(key) ^ Objects.hashCode(value);
         }
     }
@@ -104,7 +107,7 @@ public class MyHashMap {
      */
     private int capacity;
     /**
-     *Load Factor of MyHashMap
+     * Load Factor of MyHashMap
      */
     private float loadFactor;
     /**
@@ -112,14 +115,14 @@ public class MyHashMap {
      */
     private int size;
     /**
-     *Array of key-value pairs.
+     * Array of key-value pairs.
      */
     private Node[] Nodes;
 
     /**
      * Default constructor
      */
-    public MyHashMap(){
+    public MyHashMap() {
         this.capacity = DEFAULT_CAPACITY;
         this.loadFactor = DEFAULT_LOAD_FACTOR;
         this.size = 0;
@@ -128,18 +131,19 @@ public class MyHashMap {
 
     /**
      * Constructor with custom capacity and loadFactor
-     * @param capacity default value is 16
+     *
+     * @param capacity   default value is 16
      * @param loadFactor default value is 0.75f
-     * @throws  IllegalArgumentException if capacity or loadFactor is nonpositive
+     * @throws IllegalArgumentException if capacity or loadFactor is nonpositive
      */
-    public MyHashMap (int capacity, float loadFactor){
-        if (capacity <= 0){
+    public MyHashMap(int capacity, float loadFactor) {
+        if (capacity <= 0) {
             throw new IllegalArgumentException("capacity is nonpositive");
         }
-        if (loadFactor <= 0 || Float.isNaN(loadFactor)){
+        if (loadFactor <= 0 || Float.isNaN(loadFactor)) {
             throw new IllegalArgumentException("loadFactor is nonpositive");
         }
-        if (capacity > MAX_CAPACITY ){
+        if (capacity > MAX_CAPACITY) {
             capacity = MAX_CAPACITY;
         }
 
@@ -151,32 +155,31 @@ public class MyHashMap {
 
     /**
      * Calculate hash from key
+     *
      * @param key Key of Node
      * @return hash for Node
      */
-    final static int hash(String key){
+    final static int hash(String key) {
         int hash = 0;
         if (key != null) {
-            for (int i = key.length()-1; i >= 0; i--){
+            for (int i = key.length() - 1; i >= 0; i--) {
                 hash += key.charAt(i);
             }
         }
-        if(hash < 0){
-            hash = -hash;
-        }
-        return hash;
+        return Math.abs(hash);
     }
 
     /**
      * Calculate index
+     *
      * @param hash source for calculate index
      */
-    int index(int hash){
+    int index(int hash) {
         int length = this.Nodes.length;
-        if(length <= 0 ){
+        if (length <= 0) {
             throw new ArrayIndexOutOfBoundsException(length);
         }
-        if( hash < 0){
+        if (hash < 0) {
             throw new ArrayIndexOutOfBoundsException(hash);
         }
         return hash % length;
@@ -184,34 +187,35 @@ public class MyHashMap {
 
     /**
      * Internal search Node of MyHashMap
+     *
      * @param hash hash of the sought Node
-     * @param key key of the sought Node
+     * @param key  key of the sought Node
      * @return found Node or null
      */
-    Node getNode(int hash, String key){
+    Node getNode(int hash, String key) {
         Node current = this.Nodes[this.index(hash)];
-        while (current != null){
-            if (current.getHash() == hash && ((current.getKey() != null && current.getKey().equals(key)) || key == null )){
+        while (current != null) {
+            if (current.getHash() == hash && ((current.getKey() != null && current.getKey().equals(key)) || key == null)) {
                 return current;
             }
             current = current.getNext();
         }
         return null;
-    };
+    }
 
     /**
      * Resize MyHashMap. Doubling the size of the internal array
      */
-    final void resize(){
-        this.capacity = this.capacity <= MAX_CAPACITY ?
-                this.capacity * 2 :
-                MAX_CAPACITY * 2;
+    final void resize() {
+        this.capacity = (this.capacity <= MAX_CAPACITY)
+                ? this.capacity * 2
+                : MAX_CAPACITY * 2;
         this.size = 0;
         Node[] oldNodes = this.Nodes;
         this.Nodes = new Node[this.capacity];
-        for (int i = 0; i < oldNodes.length ; i++) {
+        for (int i = 0; i < oldNodes.length; i++) {
             Node current = oldNodes[i];
-            while (current != null){
+            while (current != null) {
                 this.add(current.getKey(), current.getValue());
                 current = current.getNext();
             }
@@ -222,7 +226,7 @@ public class MyHashMap {
     /**
      * Return current count of members in map
      */
-    public int size(){
+    public int size() {
         return this.size;
     }
 
@@ -234,22 +238,23 @@ public class MyHashMap {
     }
 
     /**
-     *  Add Node in MyHashMap
-     * @param key Key of node
+     * Add Node in MyHashMap
+     *
+     * @param key   Key of node
      * @param value Value of Node
      * @return True if Node has been added. False if Node already has been existed and will not adding
      */
-    public boolean add(String key, String value){
+    public boolean add(String key, String value) {
         int hash = hash(key);
         Node current = this.getNode(hash, key);
-        if (current != null){
+        if (current != null) {
             return false;
         }
         int index = index(hash);
         Node newNode = new Node(hash, key, value, Nodes[index]);
         Nodes[index] = newNode;
         this.size++;
-        if (size > capacity*loadFactor){
+        if (size > capacity * loadFactor && capacity <= MAX_CAPACITY * 2) {
             this.resize();
         }
         return true;
@@ -257,14 +262,15 @@ public class MyHashMap {
 
     /**
      * Update the value for key
-     * @param key Key for search value
+     *
+     * @param key   Key for search value
      * @param value New value
      * @return True if a value exist for the key and false if not
      */
-    public boolean update(String key, String value){
+    public boolean update(String key, String value) {
         int hash = hash(key);
         Node current = this.getNode(hash, key);
-        if (current != null){
+        if (current != null) {
             current.setValue(value);
             return true;
         }
@@ -273,13 +279,14 @@ public class MyHashMap {
 
     /**
      * Search the value for the key
+     *
      * @param key key of the search
      * @return The value for the key or null
      */
-    public String get(String key){
+    public String get(String key) {
         int hash = hash(key);
         Node current = this.getNode(hash, key);
-        if (current != null){
+        if (current != null) {
             return current.getValue();
         }
         return null;
@@ -287,20 +294,20 @@ public class MyHashMap {
 
     /**
      * Remove value of the key
+     *
      * @param key The Key of value to be removed
      * @return True if the value of the key exist and has been removed. False if the value of the kye is not exist
      */
-    public boolean remove(String key){
+    public boolean remove(String key) {
         int hash = hash(key);
         int index = this.index(hash);
         Node parent = null;
         Node current = this.Nodes[index];
-        while (current != null){
-            if (current.getHash() == hash && ((current.getKey() != null && current.getKey().equals(key)) || key == null )){
-                if (parent == null){
+        while (current != null) {
+            if (current.getHash() == hash && ((current.getKey() != null && current.getKey().equals(key)) || key == null)) {
+                if (parent == null) {
                     this.Nodes[index] = current.getNext();
-                }
-                else {
+                } else {
                     parent.setNext(current.getNext());
                 }
                 this.size--;
@@ -314,10 +321,11 @@ public class MyHashMap {
 
     /**
      * Checking exist the key in MyHashMap
+     *
      * @param key The Key for checking
      * @return True if the key exist in MyHashMap and false if not
      */
-    public boolean exist(String key){
+    public boolean exist(String key) {
         int hash = hash(key);
         return this.getNode(hash, key) != null;
     }
@@ -325,7 +333,7 @@ public class MyHashMap {
     /**
      * Clear MyHashMap and set default settings
      */
-    public void clear(){
+    public void clear() {
         this.capacity = DEFAULT_CAPACITY;
         this.loadFactor = DEFAULT_LOAD_FACTOR;
         this.size = 0;
@@ -333,23 +341,22 @@ public class MyHashMap {
     }
 
     @Override
-    public final String toString(){
+    public final String toString() {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < Nodes.length; i++) {
             Node current = Nodes[i];
             result.append(i + ": ");
-            if(current == null){
+            if (current == null) {
                 result.append("-\n");
-            }
-            else{
+            } else {
                 int lengthOfWhiteSpice = String.valueOf(i).length() + 2;
                 boolean isFirstAdd = true;
-                while (current != null){
-                    if ( !isFirstAdd ){
+                while (current != null) {
+                    if (!isFirstAdd) {
                         result.append(new String(new char[lengthOfWhiteSpice]).replace('\0', ' '));
                     }
-                    isFirstAdd =false;
-                    result.append( current.toString() + "\n");
+                    isFirstAdd = false;
+                    result.append(current.toString() + "\n");
                     current = current.getNext();
                 }
             }

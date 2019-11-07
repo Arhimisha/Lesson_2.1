@@ -7,189 +7,183 @@ import static org.junit.Assert.*;
 
 public class MyHashMapTest {
 
-    @Test
-    public void MyHashMap() {
-        try{
-            MyHashMap myHashMap = new MyHashMap(10, -0.1f);
-            Assert.fail("Expected IllegalArgumentException");
-        }
-        catch (Exception ex){
-            assertEquals("loadFactor is nonpositive", ex.getMessage());
-        }
-        try{
-            MyHashMap myHashMap = new MyHashMap(-10, 0.1f);
-            Assert.fail("Expected IllegalArgumentException");
-        }
-        catch (Exception ex){
-            assertEquals("capacity is nonpositive", ex.getMessage());
-        }
+    @Test(expected = IllegalArgumentException.class)
+    public void MyHashMapNegativeLoadFactor() {
+        MyHashMap myHashMap = new MyHashMap(10, -0.1f);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void MyHashMapNegativeCapacity() {
+        MyHashMap myHashMap = new MyHashMap(-10, 0.1f);
     }
 
     @Test
     public void size() {
         MyHashMap myHashMapCustom = new MyHashMap(100, 0.50f);
-        assertEquals(myHashMapCustom.size(), 0);
+        assertEquals(0, myHashMapCustom.size());
 
         MyHashMap myHashMapDefault = new MyHashMap();
-        assertEquals(myHashMapDefault.size(), 0);
-        for (int i = 0; i < 1000 ; i++) {
+        assertEquals(0, myHashMapDefault.size());
+        for (int i = 0; i < 1000; i++) {
             myHashMapDefault.add(String.valueOf(i), String.valueOf(i));
         }
-        assertEquals(myHashMapDefault.size(), 1000);
+        assertEquals(1000, myHashMapDefault.size());
     }
 
     @Test
-    public void hash(){
+    public void hash() {
         String key = "Hello my HashCode";
         int hash = 0;
-        for (int i = key.length()-1; i >= 0; i--){
+        for (int i = key.length() - 1; i >= 0; i--) {
             hash += key.charAt(i);
         }
-        assertEquals(MyHashMap.hash(key), hash);
+        assertEquals(hash, MyHashMap.hash(key));
 
-        key = null;
-        assertEquals(MyHashMap.hash(key), 0);
+        assertEquals(0, MyHashMap.hash(null));
     }
 
-    @Test
-    public void indexOfNodex(){
+    @Test(expected = ArrayIndexOutOfBoundsException.class)
+    public void indexOfNode() {
         MyHashMap myHashMap = new MyHashMap(10, 0.75f);
-        assertEquals(myHashMap.index(100),0);
-        assertEquals(myHashMap.index(103),3);
-        assertEquals(myHashMap.index(1100),0);
-        assertEquals(myHashMap.index(109),9);
-
+        assertEquals(0, myHashMap.index(100));
+        assertEquals(3, myHashMap.index(103));
+        assertEquals(0, myHashMap.index(1100));
+        assertEquals(9, myHashMap.index(109));
 
         myHashMap = new MyHashMap();
-        assertEquals(myHashMap.index(16),0);
-        assertEquals(myHashMap.index(19),3);
-        assertEquals(myHashMap.index(175),15);
-        assertEquals(myHashMap.index(176),0);
+        assertEquals(0, myHashMap.index(16));
+        assertEquals(3, myHashMap.index(19));
+        assertEquals(15, myHashMap.index(175));
+        assertEquals(0, myHashMap.index(176));
 
-        try{
-            myHashMap.index(-1);
-            Assert.fail("Expected ArrayIndexOutOfBoundsException");
-        }
-        catch (Exception ex){
-            assertEquals("Array index out of range: -1", ex.getMessage());
-        }
+        myHashMap.index(-1);
     }
 
     @Test
-    public void add(){
+    public void add() {
         MyHashMap myHashMap = new MyHashMap();
-        assertEquals(myHashMap.add("4","4"), true);
-        assertEquals(myHashMap.add("12","12"), true);
-        assertEquals(myHashMap.add("21","21"), true);
-        assertEquals(myHashMap.add("12","12"), false);
-        assertEquals(myHashMap.add("21","21"), false);
-        assertEquals(myHashMap.add("123","123"), true);
-        assertEquals(myHashMap.add("132","132"), true);
-        assertEquals(myHashMap.add("213","213"), true);
-        assertEquals(myHashMap.add("231","231"), true);
-        assertEquals(myHashMap.add("312","312"), true);
-        assertEquals(myHashMap.add("321","321"), true);
-        assertEquals(myHashMap.add("123","123"), false);
-        assertEquals(myHashMap.add("132","132"), false);
-        assertEquals(myHashMap.add("213","213"), false);
-        assertEquals(myHashMap.add("231","231"), false);
-        assertEquals(myHashMap.add("312","312"), false);
-        assertEquals(myHashMap.add("321","321"), false);
+        assertTrue(myHashMap.add("4", "4"));
 
-        assertEquals(myHashMap.add(null, null), true);
-        assertEquals(myHashMap.add(null, null), false);
+        assertTrue(myHashMap.add("12", "12"));
+        assertTrue(myHashMap.add("21", "21"));
+
+        assertFalse(myHashMap.add("12", "12"));
+        assertFalse(myHashMap.add("21", "21"));
+
+        assertTrue(myHashMap.add("123", "123"));
+        assertTrue(myHashMap.add("132", "132"));
+        assertTrue(myHashMap.add("213", "213"));
+        assertTrue(myHashMap.add("231", "231"));
+        assertTrue(myHashMap.add("312", "312"));
+        assertTrue(myHashMap.add("321", "321"));
+
+        assertFalse(myHashMap.add("123", "123"));
+        assertFalse(myHashMap.add("132", "132"));
+        assertFalse(myHashMap.add("213", "213"));
+        assertFalse(myHashMap.add("231", "231"));
+        assertFalse(myHashMap.add("312", "312"));
+        assertFalse(myHashMap.add("321", "321"));
+
+        assertTrue(myHashMap.add(null, null));
+        assertFalse(myHashMap.add(null, null));
     }
 
     @Test
-    public void clear(){
+    public void clear() {
         MyHashMap myHashMap = new MyHashMap();
-        myHashMap.add("4","4");
-        myHashMap.add("12","12");
-        myHashMap.add("21","21");
-        assertEquals(myHashMap.size(), 3);
+        myHashMap.add("4", "4");
+        myHashMap.add("12", "12");
+        myHashMap.add("21", "21");
+        assertEquals(3, myHashMap.size());
+
         myHashMap.clear();
-        assertEquals(myHashMap.size(), 0);
-        assertEquals(myHashMap.add("4","4"), true);
-        assertEquals(myHashMap.add("12","12"), true);
-        assertEquals(myHashMap.add("21","21"), true);
+        assertEquals(0, myHashMap.size());
+
+        assertTrue(myHashMap.add("4", "4"));
+        assertTrue(myHashMap.add("12", "12"));
+        assertTrue(myHashMap.add("21", "21"));
+        assertEquals(3, myHashMap.size());
     }
 
 
     @Test
-    public void resize(){
+    public void resize() {
         MyHashMap myHashMap = new MyHashMap();
-        for (int i = 0; i < 12 ; i++) {
-            myHashMap.add(String.valueOf(i),String.valueOf(i));
+        for (int i = 0; i < 12; i++) {
+            myHashMap.add(String.valueOf(i), String.valueOf(i));
         }
-        assertEquals(myHashMap.size(), 12);
-        assertEquals(myHashMap.toString().split(":").length-1, 16);
-        for (int i = 12; i < 25 ; i++) {
-            myHashMap.add(String.valueOf(i),String.valueOf(i));
+        assertEquals(12, myHashMap.size());
+        assertEquals(16, myHashMap.toString().split(":").length - 1);
+        for (int i = 12; i < 25; i++) {
+            myHashMap.add(String.valueOf(i), String.valueOf(i));
         }
-        assertEquals(myHashMap.size(), 25);
-        assertEquals(myHashMap.toString().split(":").length-1, 64);
+        assertEquals(25, myHashMap.size());
+        assertEquals(64,myHashMap.toString().split(":").length - 1);
     }
 
     @Test
-    public void get(){
+    public void get() {
         MyHashMap myHashMap = new MyHashMap();
-        for (int i = 0; i < 2000 ; i++) {
-            myHashMap.add(String.valueOf(i),String.valueOf(i));
+        for (int i = 0; i < 2000; i++) {
+            myHashMap.add(String.valueOf(i), String.valueOf(i));
         }
-        for (int i = 0; i < 2000 ; i++) {
-            assertEquals(myHashMap.get(String.valueOf(i)), String.valueOf(i));
+        for (int i = 0; i < 2000; i++) {
+            assertEquals(String.valueOf(i), myHashMap.get(String.valueOf(i)) );
         }
+
         myHashMap.add(null, "NULL");
-        assertEquals(myHashMap.get(null), "NULL");
+        assertEquals("NULL", myHashMap.get(null));
+
         myHashMap.add("null", null);
-        assertEquals(myHashMap.get("null"),null);
+        assertNull(myHashMap.get("null"));
 
     }
+
     @Test
-    public void update(){
+    public void update() {
         MyHashMap myHashMap = new MyHashMap();
-        for (int i = 0; i < 2000 ; i++) {
-            myHashMap.add(String.valueOf(i),String.valueOf(i));
+        for (int i = 0; i < 2000; i++) {
+            myHashMap.add(String.valueOf(i), String.valueOf(i));
         }
-        for (int i = 0; i < 2000 ; i++) {
+        for (int i = 0; i < 2000; i++) {
             myHashMap.update(String.valueOf(i), "new value");
         }
-        assertEquals(myHashMap.size(), 2000);
-        for (int i = 0; i < 2000 ; i++) {
-            assertEquals(myHashMap.get(String.valueOf(i)), "new value");
+        assertEquals(2000, myHashMap.size());
+        for (int i = 0; i < 2000; i++) {
+            assertEquals("new value", myHashMap.get(String.valueOf(i)));
         }
-        for (int i = 2000; i <3000 ; i++) {
-            assertEquals(myHashMap.get(String.valueOf(i)), null);
-        }
-    }
-
-    @Test
-    public void exist(){
-        MyHashMap myHashMap = new MyHashMap();
-        for (int i = 0; i < 2000 ; i++) {
-            myHashMap.add(String.valueOf(i),String.valueOf(i));
-        }
-        for (int i = 0; i < 2000 ; i++) {
-            assertEquals(myHashMap.exist(String.valueOf(i)), true);
-        }
-        for (int i = 2000; i <3000 ; i++) {
-            assertEquals(myHashMap.exist(String.valueOf(i)), false);
+        for (int i = 2000; i < 3000; i++) {
+            assertNull(myHashMap.get(String.valueOf(i)));
         }
     }
 
     @Test
-    public void remove(){
+    public void exist() {
         MyHashMap myHashMap = new MyHashMap();
-        for (int i = 0; i < 2000 ; i++) {
-            myHashMap.add(String.valueOf(i),String.valueOf(i));
+        for (int i = 0; i < 2000; i++) {
+            myHashMap.add(String.valueOf(i), String.valueOf(i));
         }
-        for (int i = 2000; i <3000 ; i++) {
-            assertEquals(myHashMap.remove(String.valueOf(i)), false);
-            assertEquals(myHashMap.size(), 2000);
+        for (int i = 0; i < 2000; i++) {
+            assertTrue(myHashMap.exist(String.valueOf(i)));
         }
-        for (int i = 0; i < 2000 ; i++) {
-            assertEquals(myHashMap.remove(String.valueOf(i)), true);
-            assertEquals(myHashMap.size(), 2000 - i -1 );
+        for (int i = 2000; i < 3000; i++) {
+            assertFalse(myHashMap.exist(String.valueOf(i)));
+        }
+    }
+
+    @Test
+    public void remove() {
+        MyHashMap myHashMap = new MyHashMap();
+        for (int i = 0; i < 2000; i++) {
+            myHashMap.add(String.valueOf(i), String.valueOf(i));
+        }
+        for (int i = 2000; i < 3000; i++) {
+            assertFalse(myHashMap.remove(String.valueOf(i)));
+            assertEquals(2000, myHashMap.size());
+        }
+        for (int i = 0; i < 2000; i++) {
+            assertTrue(myHashMap.remove(String.valueOf(i)));
+            assertEquals(2000 - i - 1, myHashMap.size());
         }
     }
 }
